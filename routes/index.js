@@ -6,8 +6,8 @@ router.get('/', async (ctx, next) => {
   })
 })
 
-router.get('/string', async (ctx, next) => {
-  ctx.body = 'koa2 string'
+router.get('/MP_verify_sEH8kHKww7ewzYAl.txt', async (ctx, next) => {
+  ctx.body = 'sEH8kHKww7ewzYAl'
 })
 
 router.get('/json', async (ctx, next) => {

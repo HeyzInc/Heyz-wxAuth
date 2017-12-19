@@ -69,7 +69,8 @@ router.get('/wxAuthorization',
       console.log(`ret ->${JSON.stringify(ret)}`)
       let query = new AV.Query('_User')
       query.equalTo('wxUid', ret.unionid)
-      let uesr = await query.first()
+      let user = await query.first()
+      console.log(`user -> ${JSON.stringify(user)}`)
       if (_.isUndefined(user)) {
         return ctx.body = {
           status: 403,
@@ -77,19 +78,20 @@ router.get('/wxAuthorization',
           msg: `请先在App内绑定微信`
         }
       } else {
-        let sql = `insert into WxUser values(null, ${user.get('objectId')}, ${ret.unionid}, ${result.openid}, ${user.get('mobilePhoneNumber')}, ${time}, ${time})`
+        let sql = `insert into WxUser values(null, "${user.get('objectId')}", "${ret.unionid}", "${result.openid}", "${user.get('mobilePhoneNumber')}", "${time}", "${time}")`
+        console.log(`sql =>${sql}`)
         let dbret = await db.excute(sql)
         console.log(`dbret => ${JSON.stringify(dbret)}`)
         if (_.isEmpty(dbret)) {
           return ctx.body = {
             status: -1,
             data: {},
-            msg: `data err ->${err}`
+            msg: `data operate err`
           }
         } else {
           ctx.body = {
             status: 200,
-            data: ret,
+            data: getUserInfo(user),
             msg: `success`
           }
         }
@@ -103,5 +105,16 @@ router.get('/wxAuthorization',
     }
   }
 )
+
+const getUserInfo = (user) => {
+  let userInfo = {
+    userId: user.get('objectId'),
+    nickName: _.isUndefined(user.get('nickName')) ? '' : user.get('nickName'),
+    avatarThumbnailURL: _.isUndefined(user.get('avatarURL')) ? '' : user.get('avatarURL'),
+    gender: _.isUndefined(user.get('gender')) ? '' : user.get('gender'),
+    onlineTime: user.get(`onlineTime`)
+  }
+  return userInfo
+}
 
 module.exports = router
