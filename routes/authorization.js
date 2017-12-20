@@ -78,7 +78,17 @@ router.get('/wxAuthorization',
           msg: `请先在App内绑定微信`
         }
       } else {
-        let sql = `insert into WxUser values(null, "${user.get('objectId')}", "${ret.unionid}", "${result.openid}", "${user.get('mobilePhoneNumber')}", "${time}", "${time}")`
+        let sql = `select * from WxUser where userId="${user.get('objectId')}"`
+        let ret1 = await db.excute(sql)
+        if(!_.isEmpty(ret1)){
+          res.redirect('www.heyz.com')
+          // return ctx.body = {
+          //   status: 200,
+          //   data: getUserInfo(user),
+          //   msg: `successfully`
+          // }   
+        }
+        sql = `insert into WxUser values(null, "${user.get('objectId')}", "${ret.unionid}", "${result.openid}", "${user.get('mobilePhoneNumber')}", "${time}", "${time}")`
         console.log(`sql =>${sql}`)
         let dbret = await db.excute(sql)
         console.log(`dbret => ${JSON.stringify(dbret)}`)
